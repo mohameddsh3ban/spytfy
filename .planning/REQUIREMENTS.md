@@ -1,7 +1,7 @@
 # Requirements: Spytfy
 
 **Defined:** 2026-05-22
-**Core Value:** Paste a Spotify link on your phone, get organized MP3 files — no server, no cloud, fully offline.
+**Core Value:** Paste a Spotify link on your phone, get organized MP3 files -- no server, no cloud, fully offline.
 
 ## v2.0 Requirements
 
@@ -73,34 +73,34 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUILD-01 | — | Pending |
-| BUILD-02 | — | Pending |
-| BUILD-03 | — | Pending |
-| BUILD-04 | — | Pending |
-| BUILD-05 | — | Pending |
-| BUILD-06 | — | Pending |
-| DL-01 | — | Pending |
-| DL-02 | — | Pending |
-| DL-03 | — | Pending |
-| DL-04 | — | Pending |
-| DL-05 | — | Pending |
-| DL-06 | — | Pending |
-| STOR-01 | — | Pending |
-| STOR-02 | — | Pending |
-| STOR-03 | — | Pending |
-| STOR-04 | — | Pending |
-| UI-01 | — | Pending |
-| UI-02 | — | Pending |
-| UI-03 | — | Pending |
-| UI-04 | — | Pending |
-| UI-05 | — | Pending |
-| UI-06 | — | Pending |
+| BUILD-01 | Phase 9 | Pending |
+| BUILD-02 | Phase 9 | Pending |
+| BUILD-03 | Phase 10 | Pending |
+| BUILD-04 | Phase 9 | Pending |
+| BUILD-05 | Phase 9 | Pending |
+| BUILD-06 | Phase 14 | Pending |
+| DL-01 | Phase 11 | Pending |
+| DL-02 | Phase 11 | Pending |
+| DL-03 | Phase 11 | Pending |
+| DL-04 | Phase 12 | Pending |
+| DL-05 | Phase 12 | Pending |
+| DL-06 | Phase 12 | Pending |
+| STOR-01 | Phase 14 | Pending |
+| STOR-02 | Phase 14 | Pending |
+| STOR-03 | Phase 14 | Pending |
+| STOR-04 | Phase 14 | Pending |
+| UI-01 | Phase 13 | Pending |
+| UI-02 | Phase 13 | Pending |
+| UI-03 | Phase 13 | Pending |
+| UI-04 | Phase 13 | Pending |
+| UI-05 | Phase 13 | Pending |
+| UI-06 | Phase 13 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 ⚠️
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-22*
-*Last updated: 2026-05-22 after initial definition*
+*Last updated: 2026-05-22 after roadmap creation*

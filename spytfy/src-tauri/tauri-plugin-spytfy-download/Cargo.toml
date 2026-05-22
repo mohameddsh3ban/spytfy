@@ -2,6 +2,7 @@
 name = "tauri-plugin-spytfy-download"
 version = "0.1.0"
 edition = "2021"
+links = "tauri-plugin-spytfy-download"
 
 [dependencies]
 tauri = "2"

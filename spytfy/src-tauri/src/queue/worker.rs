@@ -140,7 +140,7 @@ async fn process_job(
     let yt_dlp = resolve_sidecar("yt-dlp")?;
     let yt_dlp_str = yt_dlp.to_str().ok_or("Invalid yt-dlp path")?;
 
-    let app_data_dir = dirs::data_dir().unwrap_or_else(|| std::env::current_dir().unwrap());
+    let app_data_dir = crate::platform::data_dir(&app);
     let output_root = get_output_root(&mgr.pool).await;
     let bitrate = get_bitrate(&mgr.pool).await;
     let naming_template = get_naming_template(&mgr.pool).await;

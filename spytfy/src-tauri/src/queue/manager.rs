@@ -647,11 +647,18 @@ pub async fn get_output_root(pool: &sqlx::SqlitePool) -> String {
         .ok()
         .flatten()
         .unwrap_or_else(|| {
-            dirs::audio_dir()
-                .unwrap_or_else(|| dirs::home_dir().unwrap_or_default())
-                .join("Spytfy")
-                .to_string_lossy()
-                .to_string()
+            #[cfg(not(target_os = "android"))]
+            {
+                dirs::audio_dir()
+                    .unwrap_or_else(|| dirs::home_dir().unwrap_or_default())
+                    .join("Spytfy")
+                    .to_string_lossy()
+                    .to_string()
+            }
+            #[cfg(target_os = "android")]
+            {
+                "/storage/emulated/0/Music/Spytfy".to_string()
+            }
         })
 }
 

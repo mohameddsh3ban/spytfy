@@ -62,7 +62,7 @@ pub async fn download_track(
     let yt_dlp_path = resolve_sidecar_path(&app, "yt-dlp")?;
     let yt_dlp = yt_dlp_path.to_str().ok_or("Invalid yt-dlp path")?;
 
-    let app_data_dir = dirs::data_dir().unwrap_or_else(|| std::env::current_dir().unwrap());
+    let app_data_dir = crate::platform::data_dir(&app);
     let settings = {
         let pool = app.state::<sqlx::SqlitePool>();
         load_settings_for_pipeline(&pool).await
@@ -147,11 +147,18 @@ async fn load_settings_for_pipeline(pool: &sqlx::SqlitePool) -> Settings {
         output_root: get_setting(pool, "output_root")
             .await
             .unwrap_or_else(|| {
-                dirs::audio_dir()
-                    .unwrap_or_else(|| dirs::home_dir().unwrap_or_default())
-                    .join("Spytfy")
-                    .to_string_lossy()
-                    .to_string()
+                #[cfg(not(target_os = "android"))]
+                {
+                    dirs::audio_dir()
+                        .unwrap_or_else(|| dirs::home_dir().unwrap_or_default())
+                        .join("Spytfy")
+                        .to_string_lossy()
+                        .to_string()
+                }
+                #[cfg(target_os = "android")]
+                {
+                    "/storage/emulated/0/Music/Spytfy".to_string()
+                }
             }),
         concurrency: get_setting(pool, "concurrency")
             .await

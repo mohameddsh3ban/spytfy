@@ -26,15 +26,16 @@ pub struct SettingsPatch {
 
 impl Settings {
     fn defaults() -> Self {
-        let music_dir = dirs::audio_dir()
-            .or_else(dirs::home_dir)
-            .unwrap_or_default()
-            .to_string_lossy()
-            .to_string();
+        let music_dir = {
+            #[cfg(not(target_os = "android"))]
+            { dirs::audio_dir().or_else(dirs::home_dir).unwrap_or_default() }
+            #[cfg(target_os = "android")]
+            { std::path::PathBuf::from("/storage/emulated/0/Music") }
+        }.to_string_lossy().to_string();
 
         Self {
             output_root: music_dir,
-            concurrency: 3,
+            concurrency: crate::platform::default_concurrency(),
             bitrate_kbps: 320,
             overwrite_existing: false,
             write_cover_jpg: true,

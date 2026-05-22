@@ -1,12 +1,14 @@
 mod commands;
 mod db;
 mod download;
+#[cfg(not(target_os = "android"))]
 mod ocr;
 mod queue;
 mod spotify;
 
 use commands::settings;
 use download::pipeline;
+#[cfg(not(target_os = "android"))]
 use ocr::commands as ocr_cmds;
 use queue::commands as queue_cmds;
 use spotify::{auth, resolver, scraper};
@@ -66,35 +68,66 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            settings::get_settings,
-            settings::update_settings,
-            settings::open_folder,
-            auth::save_spotify_credentials,
-            auth::test_spotify_credentials,
-            auth::has_spotify_credentials,
-            resolver::resolve_url,
-            scraper::debug_scrape,
-            scraper::resolve_from_json,
-            pipeline::download_track,
-            queue_cmds::enqueue_download,
-            queue_cmds::list_batches,
-            queue_cmds::list_jobs,
-            queue_cmds::pause_batch,
-            queue_cmds::resume_batch,
-            queue_cmds::cancel_batch,
-            queue_cmds::retry_job,
-            queue_cmds::resume_queued,
-            queue_cmds::retry_all_failed,
-            queue_cmds::pick_candidate,
-            queue_cmds::list_failed_jobs,
-            ocr_cmds::process_screenshots,
-            ocr_cmds::debug_ocr,
-            ocr_cmds::create_playlist_from_tracks,
-            ocr_cmds::parse_text_tracklist,
-            ocr_cmds::parse_spotify_html,
-            ocr_cmds::scrape_playlist_tracks,
-        ])
+        .invoke_handler({
+            #[cfg(not(target_os = "android"))]
+            {
+                tauri::generate_handler![
+                    settings::get_settings,
+                    settings::update_settings,
+                    settings::open_folder,
+                    auth::save_spotify_credentials,
+                    auth::test_spotify_credentials,
+                    auth::has_spotify_credentials,
+                    resolver::resolve_url,
+                    scraper::debug_scrape,
+                    scraper::resolve_from_json,
+                    pipeline::download_track,
+                    queue_cmds::enqueue_download,
+                    queue_cmds::list_batches,
+                    queue_cmds::list_jobs,
+                    queue_cmds::pause_batch,
+                    queue_cmds::resume_batch,
+                    queue_cmds::cancel_batch,
+                    queue_cmds::retry_job,
+                    queue_cmds::resume_queued,
+                    queue_cmds::retry_all_failed,
+                    queue_cmds::pick_candidate,
+                    queue_cmds::list_failed_jobs,
+                    ocr_cmds::process_screenshots,
+                    ocr_cmds::debug_ocr,
+                    ocr_cmds::create_playlist_from_tracks,
+                    ocr_cmds::parse_text_tracklist,
+                    ocr_cmds::parse_spotify_html,
+                    ocr_cmds::scrape_playlist_tracks,
+                ]
+            }
+            #[cfg(target_os = "android")]
+            {
+                tauri::generate_handler![
+                    settings::get_settings,
+                    settings::update_settings,
+                    settings::open_folder,
+                    auth::save_spotify_credentials,
+                    auth::test_spotify_credentials,
+                    auth::has_spotify_credentials,
+                    resolver::resolve_url,
+                    scraper::debug_scrape,
+                    scraper::resolve_from_json,
+                    pipeline::download_track,
+                    queue_cmds::enqueue_download,
+                    queue_cmds::list_batches,
+                    queue_cmds::list_jobs,
+                    queue_cmds::pause_batch,
+                    queue_cmds::resume_batch,
+                    queue_cmds::cancel_batch,
+                    queue_cmds::retry_job,
+                    queue_cmds::resume_queued,
+                    queue_cmds::retry_all_failed,
+                    queue_cmds::pick_candidate,
+                    queue_cmds::list_failed_jobs,
+                ]
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running Spytfy");
 }

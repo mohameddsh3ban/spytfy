@@ -16,6 +16,9 @@
     ],
     "resources": {
       "binaries/WebView2Loader.dll": "./"
+    },
+    "android": {
+      "minSdkVersion": 29
     }
   },
   "app": {

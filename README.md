@@ -294,11 +294,6 @@ Spotify URL
 
 ---
 
-## Built With
-
-This project was built entirely with [Claude Code](https://claude.ai/code) &mdash; Anthropic's AI coding agent. From architecture design to implementation, every line of Rust and TypeScript was written through AI-assisted development.
-
----
 
 ## License
 

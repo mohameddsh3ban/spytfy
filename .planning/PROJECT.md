@@ -63,6 +63,7 @@ Paste a Spotify link on your phone, get organized MP3 files with full metadata â
 - Android 12+ scoped storage requires SAF or MediaStore for Music directory access
 - Existing Rust backend code is ~80% reusable (Spotify resolver, scorer, tagger, queue)
 - Angular frontend needs responsive redesign for mobile viewports
+- **Dev tooling**: Android Studio installed â€” use for emulator management, APK inspection, logcat debugging, and layout testing across each phase. Emulators provide fast feedback loop before physical device testing.
 
 ## Constraints
 

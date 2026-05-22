@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.nx/
+.angular/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/*-msvc.exe
+src-tauri/binaries/WebView2Loader.dll
+*.log
+*.exe
+.env
+.DS_Store
+Thumbs.db

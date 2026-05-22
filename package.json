@@ -1,0 +1,10 @@
+{
+  "name": "spytfy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "cd spytfy && powershell -ExecutionPolicy Bypass -File build.ps1",
+    "stop": "node scripts/stop.mjs"
+  }
+}

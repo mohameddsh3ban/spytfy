@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.nx/
+.angular/
+target/
+*.log
+*.exe
+.env
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.planning/

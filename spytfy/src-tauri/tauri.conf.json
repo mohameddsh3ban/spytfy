@@ -1,0 +1,42 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicegui-inc/nicegui-tauri/refs/heads/main/static/schemas/tauri.conf.schema.json",
+  "productName": "Spytfy",
+  "version": "0.1.0",
+  "identifier": "com.spytfy.app",
+  "build": {
+    "frontendDist": "../dist/apps/desktop/browser",
+    "devUrl": "http://localhost:4200",
+    "beforeDevCommand": "pnpm nx serve desktop",
+    "beforeBuildCommand": "pnpm nx build desktop --configuration=production"
+  },
+  "bundle": {
+    "externalBin": [
+      "binaries/yt-dlp",
+      "binaries/ffmpeg"
+    ],
+    "resources": {
+      "binaries/WebView2Loader.dll": "./"
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Spytfy",
+        "width": 1100,
+        "height": 700,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  }
+}

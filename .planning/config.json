@@ -1,0 +1,23 @@
+{
+  "project": "crate",
+  "display_name": "Crate — Spotify Local Solution",
+  "description": "Cross-platform Tauri 2 desktop app: paste Spotify URL → download MP3s with real cover art, ID3 tags, organized folders.",
+  "stack": {
+    "shell": "Tauri 2.x",
+    "frontend": "Angular 20 + Tailwind v4",
+    "motion": "GSAP + Lenis",
+    "backend": "Rust + Tokio",
+    "spotify": "rspotify",
+    "downloader": "yt-dlp (sidecar)",
+    "audio": "ffmpeg (sidecar)",
+    "tagging": "id3 crate",
+    "db": "SQLite via sqlx",
+    "secrets": "tauri-plugin-keyring"
+  },
+  "mode": "interactive",
+  "model_profile": "balanced",
+  "parallelization": true,
+  "fallow": false,
+  "created_at": "2026-05-19",
+  "gsd_version": "1.0.0"
+}

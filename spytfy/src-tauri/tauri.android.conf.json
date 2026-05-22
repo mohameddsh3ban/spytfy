@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "externalBin": [],
+    "resources": {},
+    "android": {
+      "minSdkVersion": 29
+    }
+  }
+}

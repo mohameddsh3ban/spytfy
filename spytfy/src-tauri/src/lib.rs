@@ -24,9 +24,10 @@ pub fn run() {
             let spotify_client = auth::create_client_state();
 
             tauri::async_runtime::block_on(async {
-                let app_data_dir = dirs::data_dir().unwrap_or_else(|| {
-                    std::env::current_dir().expect("failed to get current dir")
-                });
+                let app_data_dir = app_handle.path().app_data_dir()
+                    .unwrap_or_else(|_| dirs::data_dir().unwrap_or_else(|| {
+                        std::env::current_dir().expect("failed to get current dir")
+                    }));
 
                 let pool = db::init_pool(app_data_dir)
                     .await

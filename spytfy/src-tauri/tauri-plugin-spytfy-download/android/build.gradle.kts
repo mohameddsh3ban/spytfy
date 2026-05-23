@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.spytfy.download"
+    namespace = "app.tauri.spytfy_download"
     compileSdk = 36
 
     defaultConfig {

@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-download-audio"
+description = "Enables the download_audio command without any pre-configured scope."
+commands.allow = ["download_audio"]
+
+[[permission]]
+identifier = "deny-download-audio"
+description = "Denies the download_audio command without any pre-configured scope."
+commands.deny = ["download_audio"]

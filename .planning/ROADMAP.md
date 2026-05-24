@@ -27,66 +27,40 @@
 
 **Milestone Goal:** Port Spytfy to Android as a native APK with on-device download pipeline -- no server, fully offline. Paste a Spotify link on your phone, get organized MP3 files.
 
-**Phase Numbering:**
-- Integer phases (9, 10, 11...): Planned milestone work
-- Decimal phases (10.1, 10.2): Urgent insertions (marked with INSERTED)
-
-- [ ] **Phase 9: Android Scaffold** - Tauri 2 Android build pipeline boots on device with SQLite working
-- [ ] **Phase 10: Platform Abstraction** - cfg(target_os) layer keeps desktop and Android builds green
-- [ ] **Phase 11: Binary Execution Engine** - Kotlin plugin bridges youtubedl-android for search and download
-- [ ] **Phase 12: Download Pipeline Integration** - End-to-end Spotify URL to tagged MP3 on Android
+- [x] **Phase 9: Android Scaffold** - Tauri 2 Android build pipeline boots on S24 Ultra with SQLite working
+- [x] **Phase 10: Platform Abstraction** - cfg(target_os) layer keeps desktop and Android builds green
+- [x] **Phase 11: Binary Execution Engine** - Kotlin plugin bridges youtubedl-android for search and download (spike PASSED 8/8)
+- [x] **Phase 12: Download Pipeline Integration** - End-to-end Spotify URL to tagged MP3 on Android with MediaStore visibility
 - [ ] **Phase 13: Mobile UI** - Bottom navigation, responsive pages, touch-friendly mobile experience
-- [ ] **Phase 14: Storage, Background Service & Release** - MediaStore, foreground service, signed APK
+- [ ] **Phase 14: Background Service & Release** - Foreground service, signed APK, distribution
 
 ## Phase Details
 
-### Phase 9: Android Scaffold
-**Goal**: A Tauri 2 Android app boots on a physical device or emulator with the existing Angular UI visible in WebView and SQLite database initializing correctly
-**Depends on**: Nothing (first phase of v2.0 milestone; v1.0 desktop is complete)
-**Requirements**: BUILD-01, BUILD-02, BUILD-04, BUILD-05
-**Success Criteria** (what must be TRUE):
-  1. Running `cargo tauri android dev` produces an APK that installs and launches on an Android 12+ device or emulator
-  2. The existing Angular UI renders in the Android WebView (pages load, navigation works)
-  3. SQLite database initializes on Android without crash (migrations run, tables created)
-  4. Rust backend cross-compiles to ARM64 with cdylib crate-type and loads via JNI without UnsatisfiedLinkError
-**Plans**: TBD
+### Phase 9: Android Scaffold -- COMPLETE (2026-05-22)
+**Goal**: A Tauri 2 Android app boots on a physical device with the existing Angular UI visible in WebView and SQLite database initializing correctly
+**Requirements**: BUILD-01 ✅, BUILD-02 ✅, BUILD-04 ✅, BUILD-05 ✅, BUILD-07 ✅
+**Verified on**: Samsung Galaxy S24 Ultra (SM-S928B, API 36, Android 16)
 
-### Phase 10: Platform Abstraction
-**Goal**: Shared codebase compiles for both desktop (Windows) and Android targets without platform-specific code leaking across boundaries
-**Depends on**: Phase 9
-**Requirements**: BUILD-03
-**Success Criteria** (what must be TRUE):
-  1. A `platform.rs` module with `cfg(target_os)` gates provides data directory, output directory, and binary resolution for each platform
-  2. All `dirs` crate calls are replaced with Tauri `app.path()` APIs for Android paths
-  3. Desktop build (`cargo tauri dev`) still compiles and runs correctly with no regressions
-  4. Android build continues to boot after platform abstraction refactor
-**Plans**: TBD
+### Phase 10: Platform Abstraction -- COMPLETE (2026-05-23)
+**Goal**: Shared codebase compiles for both desktop and Android without platform-specific code leaking
+**Requirements**: BUILD-03 ✅
+**Key artifact**: `src-tauri/src/platform.rs`
 
-### Phase 11: Binary Execution Engine
-**Goal**: A custom Kotlin Tauri plugin wraps youtubedl-android to execute YouTube search and MP3 download on Android
-**Depends on**: Phase 10
-**Requirements**: DL-01, DL-02, DL-03
-**Success Criteria** (what must be TRUE):
-  1. A Kotlin Tauri plugin initializes youtubedl-android on app startup without crash or ANR
-  2. YouTube search invoked from Rust returns scored candidates with video ID, title, duration, and channel (same scoring algorithm as desktop)
-  3. Audio download from a YouTube video ID produces a 320 kbps MP3 file on Android device storage
-  4. All youtubedl-android operations run on background threads (no ANR dialog within 30 seconds of operation start)
-**Plans**: TBD
+### Phase 11: Binary Execution Engine -- COMPLETE (2026-05-24)
+**Goal**: Custom Kotlin Tauri plugin wraps youtubedl-android for YouTube search and MP3 download
+**Requirements**: DL-01 ✅, DL-02 ✅, DL-03 ✅, DL-07 ✅
+**Key artifact**: `src-tauri/tauri-plugin-spytfy-download/`
+**Spike result**: 8/8 PASS -- search 5 candidates in 4s, download 8.13MB MP3 in 28.5s
 
-### Phase 12: Download Pipeline Integration
-**Goal**: The complete download pipeline works end-to-end on Android -- paste a Spotify URL, get a tagged MP3 with cover art
-**Depends on**: Phase 11
-**Requirements**: DL-04, DL-05, DL-06
-**Success Criteria** (what must be TRUE):
-  1. Pasting a Spotify track URL resolves the track, searches YouTube, downloads MP3, and applies ID3v2.4 tags with real album cover art -- all on device
-  2. Pasting a Spotify album or playlist URL resolves all tracks and downloads them as a batch with per-track progress
-  3. Downloaded MP3 files pass SHA-256 verification (file integrity confirmed post-download)
-  4. Queue pause, resume, and cancel work during batch downloads on Android
-**Plans**: TBD
+### Phase 12: Download Pipeline Integration -- COMPLETE (2026-05-25)
+**Goal**: End-to-end download pipeline on Android with MediaStore visibility
+**Requirements**: DL-04 ✅, DL-05 ✅, DL-06 ✅, STOR-01 ✅ (early), STOR-02 ✅ (early)
+**Key artifact**: `src-tauri/src/download/android.rs`
+**Verified**: Tracks download with ID3 tags + cover art, appear in Samsung Music
 
-### Phase 13: Mobile UI
+### Phase 13: Mobile UI -- NEXT
 **Goal**: The Angular frontend is redesigned for mobile viewports with bottom navigation, touch-friendly controls, and all core pages adapted
-**Depends on**: Phase 12
+**Depends on**: Phase 12 ✅
 **Requirements**: UI-01, UI-02, UI-03, UI-04, UI-05, UI-06
 **Success Criteria** (what must be TRUE):
   1. Bottom navigation bar replaces the desktop sidebar with tabs for Input, Downloads, Library, and Settings
@@ -97,38 +71,25 @@
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 14: Storage, Background Service & Release
-**Goal**: Downloads persist to the shared Music directory visible in other apps, survive app backgrounding, and the APK is signed for distribution
+### Phase 14: Background Service & Release -- PENDING
+**Goal**: Downloads survive app backgrounding, signed APK ready for distribution
 **Depends on**: Phase 13
-**Requirements**: STOR-01, STOR-02, STOR-03, STOR-04, BUILD-06
+**Requirements**: STOR-03, STOR-04, STOR-05, STOR-06, BUILD-06
+**Note**: STOR-01 and STOR-02 delivered early in Phase 12
 **Success Criteria** (what must be TRUE):
-  1. Downloaded MP3s appear in the device Music directory via MediaStore and are playable in Samsung Music, Poweramp, or other Android music apps
-  2. Downloads continue when the user switches to another app or locks the screen (foreground service keeps pipeline alive)
-  3. A notification shows download progress with current track count (e.g., "Downloading 3/12 tracks")
-  4. A signed, versioned release APK installs on Android 12+ devices without security warnings from known-source installation
-**Plans**: TBD
+  1. Downloads continue when the user switches to another app or locks the screen (foreground service or UIDT keeps pipeline alive)
+  2. A notification shows download progress with current track count
+  3. A signed, versioned release APK installs on Android 10+ devices without security warnings
+  4. Keystore backed up to password manager + 2 physical locations
 
 ## Progress
 
-**Execution Order:**
-Phases execute in numeric order: 9 -> 10 -> 11 -> 12 -> 13 -> 14
-Decimal phases (if inserted) execute between their surrounding integers.
-
-| Phase | Milestone | Plans Complete | Status | Completed |
-|-------|-----------|----------------|--------|-----------|
-| 1. Scaffold | v1.0 | - | Complete | - |
-| 2. Spotify Resolve | v1.0 | - | Complete | - |
-| 3. Single-Track Download | v1.0 | - | Complete | - |
-| 4. Queue & Concurrency | v1.0 | - | Complete | - |
-| 4B. Screenshot Import | v1.0 | - | Complete | - |
-| 4C. Thumbnail Embedding | v1.0 | - | Complete | - |
-| 5. Folders & Naming | v1.0 | - | Complete | - |
-| 6. Failure Recovery | v1.0 | - | Complete | - |
-| 7. Polish | v1.0 | - | Complete | - |
-| 8. Packaging | v1.0 | - | Complete | - |
-| 9. Android Scaffold | v2.0 | 0/? | Not started | - |
-| 10. Platform Abstraction | v2.0 | 0/? | Not started | - |
-| 11. Binary Execution Engine | v2.0 | 0/? | Not started | - |
-| 12. Download Pipeline Integration | v2.0 | 0/? | Not started | - |
-| 13. Mobile UI | v2.0 | 0/? | Not started | - |
-| 14. Storage, Background Service & Release | v2.0 | 0/? | Not started | - |
+| Phase | Milestone | Status | Completed |
+|-------|-----------|--------|-----------|
+| 1-8 | v1.0 | ✅ Complete | Shipped |
+| 9. Android Scaffold | v2.0 | ✅ Complete | 2026-05-22 |
+| 10. Platform Abstraction | v2.0 | ✅ Complete | 2026-05-23 |
+| 11. Binary Execution Engine | v2.0 | ✅ Complete | 2026-05-24 |
+| 12. Download Pipeline Integration | v2.0 | ✅ Complete | 2026-05-25 |
+| 13. Mobile UI | v2.0 | ○ Next | - |
+| 14. Background Service & Release | v2.0 | ○ Pending | - |

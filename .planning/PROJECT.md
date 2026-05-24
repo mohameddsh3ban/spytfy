@@ -77,10 +77,15 @@ Paste a Spotify link on your phone, get organized MP3 files with full metadata �
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Android 12+ minimum | Scoped storage built-in, 65%+ market share, Material You | — Pending |
-| Same auth as desktop (manual creds) | Proven flow, simpler implementation, consistent UX | — Pending |
-| No OCR for mobile v1 | Reduces scope, OCR deps complex on Android | — Pending |
-| Separate branch (android) | Isolate mobile work from desktop stability | — Pending |
+| minSdkVersion 29 (was 31) | ~92% device coverage, Tauri uses 28 | ✓ Good |
+| youtubedl-android via Kotlin plugin | Battle-tested, behavioral parity with desktop yt-dlp | ✓ Good — spike 8/8 PASS |
+| junkfood02 Maven Central fork | Same lib, better distribution, used by Seal (26k stars) | ✓ Good |
+| App-private storage + MediaStore copy | Scoped storage blocks /sdcard writes; copy after tagging | ✓ Good |
+| register_android_plugin() required | Plugin compiles without it but never loads — undocumented | ✓ Good — fixed |
+| CARGO_TARGET_DIR for spaces in path | MinGW dlltool breaks on spaces; C:\spytfy-target workaround | ✓ Good |
+| Same auth as desktop (manual creds) | Proven flow, simpler implementation, consistent UX | ✓ Good |
+| No OCR for mobile v1 | Reduces scope, OCR deps complex on Android | ✓ Good |
+| Separate branch (android) | Isolate mobile work from desktop stability | ✓ Good |
 
 ## Evolution
 
@@ -100,4 +105,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-22 after milestone v2.0 initialization*
+*Last updated: 2026-05-25 after Phase 12 completion (Phases 9-12 done, downloads working on S24 Ultra)*

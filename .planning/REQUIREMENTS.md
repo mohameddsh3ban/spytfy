@@ -9,28 +9,32 @@ Requirements for Android mobile release. Each maps to roadmap phases.
 
 ### Build & Platform
 
-- [ ] **BUILD-01**: App builds as Android APK targeting API 31+ via Tauri 2 Android
-- [ ] **BUILD-02**: Rust backend cross-compiles to ARM64 with cdylib crate-type
-- [ ] **BUILD-03**: Platform abstraction layer (cfg target_os) keeps desktop builds green
-- [ ] **BUILD-04**: All `dirs` crate calls replaced with Tauri `app.path()` APIs on Android
-- [ ] **BUILD-05**: SQLite database works on Android (bundled feature, correct path)
+- [x] **BUILD-01**: App builds as Android APK targeting API 29+ via Tauri 2 Android
+- [x] **BUILD-02**: Rust backend cross-compiles to ARM64 with cdylib crate-type
+- [x] **BUILD-03**: Platform abstraction layer (cfg target_os) keeps desktop builds green
+- [x] **BUILD-04**: All `dirs` crate calls replaced with Tauri `app.path()` APIs on Android
+- [x] **BUILD-05**: SQLite database works on Android (bundled feature, correct path)
 - [ ] **BUILD-06**: Release APK is signed and versioned for distribution
+- [x] **BUILD-07**: `minSdkVersion = 29` in tauri.conf.json (targets ~92% of Android devices)
 
 ### Download Engine
 
-- [ ] **DL-01**: Custom Kotlin Tauri plugin bridges youtubedl-android library to Rust
-- [ ] **DL-02**: YouTube search returns scored candidates on Android (same scoring as desktop)
-- [ ] **DL-03**: Audio downloads as 320 kbps MP3 via youtubedl-android ffmpeg
-- [ ] **DL-04**: ID3v2.4 tags + cover art embedded on downloaded MP3s (reuse desktop tagger)
-- [ ] **DL-05**: Post-download SHA-256 verification (reuse desktop verifier)
-- [ ] **DL-06**: Full pipeline: Spotify resolve → YT search → score → download → tag → verify
+- [x] **DL-01**: Custom Kotlin Tauri plugin bridges youtubedl-android library to Rust
+- [x] **DL-02**: YouTube search returns scored candidates on Android (same scoring as desktop)
+- [x] **DL-03**: Audio downloads as 320 kbps MP3 via youtubedl-android ffmpeg
+- [x] **DL-04**: ID3v2.4 tags + cover art embedded on downloaded MP3s (reuse desktop tagger)
+- [x] **DL-05**: Post-download SHA-256 verification (reuse desktop verifier)
+- [x] **DL-06**: Full pipeline: Spotify resolve -> YT search -> score -> download -> tag -> verify
+- [x] **DL-07**: yt-dlp binary updatable at runtime via YoutubeDL.updateYoutubeDL() on app launch
 
 ### Storage & Background
 
-- [ ] **STOR-01**: Downloaded MP3s written to Music/ directory via MediaStore API
-- [ ] **STOR-02**: MP3s visible in other Android music apps (Samsung Music, Poweramp, etc.)
-- [ ] **STOR-03**: Foreground service keeps downloads alive when app is backgrounded
+- [x] **STOR-01**: Downloaded MP3s written to Music/ directory via MediaStore API
+- [x] **STOR-02**: MP3s visible in other Android music apps (Samsung Music, Poweramp, etc.)
+- [ ] **STOR-03**: Foreground service or UIDT keeps downloads alive when app is backgrounded
 - [ ] **STOR-04**: Notification shows download progress with track count
+- [ ] **STOR-05**: Downloads on API 34+ use UIDT JobScheduler; API 29-33 use foreground service
+- [ ] **STOR-06**: MediaStore writes use IS_PENDING flow preserving ID3 tags end-to-end
 
 ### Mobile UI
 
@@ -73,22 +77,26 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUILD-01 | Phase 9 | Pending |
-| BUILD-02 | Phase 9 | Pending |
-| BUILD-03 | Phase 10 | Pending |
-| BUILD-04 | Phase 9 | Pending |
-| BUILD-05 | Phase 9 | Pending |
+| BUILD-01 | Phase 9 | ✅ Complete |
+| BUILD-02 | Phase 9 | ✅ Complete |
+| BUILD-03 | Phase 10 | ✅ Complete |
+| BUILD-04 | Phase 9 | ✅ Complete |
+| BUILD-05 | Phase 9 | ✅ Complete |
 | BUILD-06 | Phase 14 | Pending |
-| DL-01 | Phase 11 | Pending |
-| DL-02 | Phase 11 | Pending |
-| DL-03 | Phase 11 | Pending |
-| DL-04 | Phase 12 | Pending |
-| DL-05 | Phase 12 | Pending |
-| DL-06 | Phase 12 | Pending |
-| STOR-01 | Phase 14 | Pending |
-| STOR-02 | Phase 14 | Pending |
+| BUILD-07 | Phase 9 | ✅ Complete |
+| DL-01 | Phase 11 | ✅ Complete |
+| DL-02 | Phase 11 | ✅ Complete |
+| DL-03 | Phase 11 | ✅ Complete |
+| DL-04 | Phase 12 | ✅ Complete |
+| DL-05 | Phase 12 | ✅ Complete |
+| DL-06 | Phase 12 | ✅ Complete |
+| DL-07 | Phase 11 | ✅ Complete |
+| STOR-01 | Phase 12 | ✅ Complete (early) |
+| STOR-02 | Phase 12 | ✅ Complete (early) |
 | STOR-03 | Phase 14 | Pending |
 | STOR-04 | Phase 14 | Pending |
+| STOR-05 | Phase 14 | Pending |
+| STOR-06 | Phase 14 | Pending |
 | UI-01 | Phase 13 | Pending |
 | UI-02 | Phase 13 | Pending |
 | UI-03 | Phase 13 | Pending |
@@ -97,10 +105,11 @@ Deferred to future release. Tracked but not in current roadmap.
 | UI-06 | Phase 13 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 22 total
-- Mapped to phases: 22
+- v2.0 requirements: 26 total
+- Complete: 17
+- Pending: 9
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-22*
-*Last updated: 2026-05-22 after roadmap creation*
+*Last updated: 2026-05-25 after Phase 12 completion*

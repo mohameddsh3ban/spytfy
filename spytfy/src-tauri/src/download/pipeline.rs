@@ -59,9 +59,6 @@ pub async fn download_track(
     app: AppHandle,
     track: SpotifyTrack,
 ) -> Result<DownloadResult, String> {
-    let yt_dlp_path = resolve_sidecar_path(&app, "yt-dlp")?;
-    let yt_dlp = yt_dlp_path.to_str().ok_or("Invalid yt-dlp path")?;
-
     let app_data_dir = crate::platform::data_dir(&app);
     let settings = {
         let pool = app.state::<sqlx::SqlitePool>();
@@ -69,11 +66,20 @@ pub async fn download_track(
     };
     let output_root = PathBuf::from(&settings.output_root);
     let bitrate = settings.bitrate_kbps;
-
-    // Step 1: Search YouTube
-    emit_state(&app, "searching");
     let artist = track.artists.first().cloned().unwrap_or_default();
-    let candidates = youtube::search_youtube(yt_dlp, &artist, &track.name).await?;
+
+    // Step 1: Search YouTube (platform-gated)
+    emit_state(&app, "searching");
+
+    #[cfg(not(target_os = "android"))]
+    let candidates = {
+        let yt_dlp_path = resolve_sidecar_path(&app, "yt-dlp")?;
+        let yt_dlp = yt_dlp_path.to_str().ok_or("Invalid yt-dlp path")?;
+        youtube::search_youtube(yt_dlp, &artist, &track.name).await?
+    };
+
+    #[cfg(target_os = "android")]
+    let candidates = super::android::search_youtube_android(&app, &artist, &track.name).await?;
 
     if candidates.is_empty() {
         return Err("No YouTube results found".to_string());
@@ -91,12 +97,28 @@ pub async fn download_track(
             }
         });
 
-    // Step 3: Download MP3
+    // Step 3: Download MP3 (platform-gated)
     emit_state(&app, "downloading");
     let output_path = downloader::build_output_path(&output_root, &track, &track.album, "{folder}/{number} - {artist} - {title}");
-    downloader::download_mp3(&app, yt_dlp, &matched.url, &output_path, bitrate, "", "").await?;
 
-    // Step 4: Fetch cover art + tag
+    if let Some(parent) = output_path.parent() {
+        std::fs::create_dir_all(parent).ok();
+    }
+
+    #[cfg(not(target_os = "android"))]
+    {
+        let yt_dlp_path = resolve_sidecar_path(&app, "yt-dlp")?;
+        let yt_dlp = yt_dlp_path.to_str().ok_or("Invalid yt-dlp path")?;
+        downloader::download_mp3(&app, yt_dlp, &matched.url, &output_path, bitrate, "", "").await?;
+    }
+
+    #[cfg(target_os = "android")]
+    {
+        let output_str = output_path.to_string_lossy().to_string();
+        super::android::download_audio_android(&app, &matched.candidate.id, &output_str, bitrate as u32).await?;
+    }
+
+    // Step 4: Fetch cover art + tag (shared across platforms)
     emit_state(&app, "tagging");
     let cache_dir = cover::cover_cache_dir(&app_data_dir);
     let cache_key = if track.album_id.is_empty() { &track.id } else { &track.album_id };
@@ -109,7 +131,6 @@ pub async fn download_track(
             verifier::verify_mp3(&output_path, &cr.hash)?;
         }
         Err(_) => {
-            // Tag without cover
             use id3::{Tag, TagLike, Version};
             let mut tag = Tag::new();
             tag.set_title(&track.name);
@@ -121,7 +142,6 @@ pub async fn download_track(
         }
     }
 
-    // Optional: write cover.jpg to folder
     if settings.write_cover_jpg {
         if let Ok(cr) = &cover_result {
             if let Some(parent) = output_path.parent() {

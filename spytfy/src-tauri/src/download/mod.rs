@@ -5,3 +5,5 @@ pub mod scorer;
 pub mod tagger;
 pub mod verifier;
 pub mod youtube;
+#[cfg(target_os = "android")]
+pub mod android;

@@ -137,7 +137,9 @@ async fn process_job(
     batch_id: &str,
     track: &crate::spotify::types::SpotifyTrack,
 ) -> Result<(), String> {
+    #[cfg(not(target_os = "android"))]
     let yt_dlp = resolve_sidecar("yt-dlp")?;
+    #[cfg(not(target_os = "android"))]
     let yt_dlp_str = yt_dlp.to_str().ok_or("Invalid yt-dlp path")?;
 
     let app_data_dir = crate::platform::data_dir(&app);
@@ -178,37 +180,60 @@ async fn process_job(
     let mut scored = Vec::new();
 
     if let Some(ref url) = pre_selected_url {
-        // User picked this candidate — skip search, download directly
         emit_state("downloading");
         mgr.update_job_state(job_id, "downloading", None).await;
         mgr.update_job_output(job_id, url, &output_path.to_string_lossy()).await;
+
+        #[cfg(not(target_os = "android"))]
         match downloader::download_mp3(app, yt_dlp_str, url, &output_path, bitrate, job_id, batch_id).await {
             Ok(()) => { matched_yt_url = url.to_string(); }
             Err(e) => { download_err = e; }
         }
+
+        #[cfg(target_os = "android")]
+        {
+            let video_id = url.split("v=").last().unwrap_or("").split('&').next().unwrap_or("");
+            match crate::download::android::download_audio_android(app, video_id, &output_path.to_string_lossy(), bitrate as u32).await {
+                Ok(_) => { matched_yt_url = url.to_string(); }
+                Err(e) => { download_err = e; }
+            }
+        }
     } else {
-        // Step 1: Search YouTube
         emit_state("resolving");
         mgr.update_job_state(job_id, "resolving", None).await;
 
+        #[cfg(not(target_os = "android"))]
         let candidates = youtube::search_youtube(yt_dlp_str, &artist, &track.name).await?;
+
+        #[cfg(target_os = "android")]
+        let candidates = crate::download::android::search_youtube_android(app, &artist, &track.name).await?;
+
         if candidates.is_empty() {
             return Err("No YouTube results found".to_string());
         }
 
-        // Step 2: Score all candidates
         scored = scorer::score_all_candidates(&artist, &track.name, track.duration_ms, &candidates);
 
-        // Step 3: Try downloading — fall through to next candidate on failure
         emit_state("downloading");
         mgr.update_job_state(job_id, "downloading", None).await;
+
+        if let Some(parent) = output_path.parent() {
+            std::fs::create_dir_all(parent).ok();
+        }
 
         for (i, matched) in scored.iter().take(3).enumerate() {
             if i > 0 {
                 tokio::time::sleep(std::time::Duration::from_secs(3)).await;
             }
             mgr.update_job_output(job_id, &matched.url, &output_path.to_string_lossy()).await;
-            match downloader::download_mp3(app, yt_dlp_str, &matched.url, &output_path, bitrate, job_id, batch_id).await {
+
+            #[cfg(not(target_os = "android"))]
+            let dl_result = downloader::download_mp3(app, yt_dlp_str, &matched.url, &output_path, bitrate, job_id, batch_id).await;
+
+            #[cfg(target_os = "android")]
+            let dl_result = crate::download::android::download_audio_android(app, &matched.candidate.id, &output_path.to_string_lossy(), bitrate as u32).await.map(|_| ());
+
+            match dl_result {
                 Ok(()) => {
                     matched_yt_url = matched.url.clone();
                     download_err.clear();

@@ -4,7 +4,7 @@
     "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.spytfy.download",
+  "applicationId": "app.tauri.spytfy_download",
   "variantName": "debug",
   "elements": [
     {

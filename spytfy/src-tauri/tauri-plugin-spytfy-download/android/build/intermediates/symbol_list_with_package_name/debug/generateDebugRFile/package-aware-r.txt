@@ -1,1 +1,1 @@
-com.spytfy.download
+app.tauri.spytfy_download

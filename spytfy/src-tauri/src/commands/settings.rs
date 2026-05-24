@@ -30,7 +30,7 @@ impl Settings {
             #[cfg(not(target_os = "android"))]
             { dirs::audio_dir().or_else(dirs::home_dir).unwrap_or_default() }
             #[cfg(target_os = "android")]
-            { std::path::PathBuf::from("/storage/emulated/0/Music") }
+            { std::path::PathBuf::from("/data/data/com.spytfy.app/files/Music") }
         }.to_string_lossy().to_string();
 
         Self {

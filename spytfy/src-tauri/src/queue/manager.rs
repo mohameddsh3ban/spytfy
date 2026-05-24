@@ -657,7 +657,7 @@ pub async fn get_output_root(pool: &sqlx::SqlitePool) -> String {
             }
             #[cfg(target_os = "android")]
             {
-                "/storage/emulated/0/Music/Spytfy".to_string()
+                "/data/data/com.spytfy.app/files/Music/Spytfy".to_string()
             }
         })
 }

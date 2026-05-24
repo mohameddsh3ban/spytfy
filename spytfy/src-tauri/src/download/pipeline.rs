@@ -177,7 +177,7 @@ async fn load_settings_for_pipeline(pool: &sqlx::SqlitePool) -> Settings {
                 }
                 #[cfg(target_os = "android")]
                 {
-                    "/storage/emulated/0/Music/Spytfy".to_string()
+                    "/data/data/com.spytfy.app/files/Music/Spytfy".to_string()
                 }
             }),
         concurrency: get_setting(pool, "concurrency")

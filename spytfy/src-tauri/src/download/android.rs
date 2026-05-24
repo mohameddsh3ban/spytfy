@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
+use tauri_plugin_spytfy_download::SpytfyDownloadExt;
 
 use super::youtube::YtCandidate;
 
@@ -47,13 +48,12 @@ pub async fn search_youtube_android(
     title: &str,
 ) -> Result<Vec<YtCandidate>, String> {
     let query = format!("{artist} {title}");
+    let plugin = app.spytfy_download();
 
-    let response: SearchResponse = app
-        .run_mobile_plugin("spytfy-download", "searchYoutube", SearchRequest {
-            query,
-            max_results: 5,
-        })
-        .map_err(|e| format!("Android search failed: {e}"))?;
+    let response: SearchResponse = plugin.run_mobile_plugin("searchYoutube", SearchRequest {
+        query,
+        max_results: 5,
+    })?;
 
     Ok(response
         .results
@@ -74,13 +74,13 @@ pub async fn download_audio_android(
     output_path: &str,
     bitrate_kbps: u32,
 ) -> Result<String, String> {
-    let response: DownloadResponse = app
-        .run_mobile_plugin("spytfy-download", "downloadAudio", DownloadRequest {
-            video_id: video_id.to_string(),
-            output_path: output_path.to_string(),
-            bitrate_kbps,
-        })
-        .map_err(|e| format!("Android download failed: {e}"))?;
+    let plugin = app.spytfy_download();
+
+    let response: DownloadResponse = plugin.run_mobile_plugin("downloadAudio", DownloadRequest {
+        video_id: video_id.to_string(),
+        output_path: output_path.to_string(),
+        bitrate_kbps,
+    })?;
 
     Ok(response.file_path)
 }

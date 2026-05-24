@@ -338,6 +338,20 @@ async fn process_job(
         }
     }
 
+    #[cfg(target_os = "android")]
+    {
+        if output_path.exists() {
+            let display_name = output_path.file_name()
+                .map(|n| n.to_string_lossy().to_string())
+                .unwrap_or_else(|| "track.mp3".to_string());
+            if let Err(e) = crate::download::android::register_in_media_store(
+                app, &output_path.to_string_lossy(), &display_name, &batch_name,
+            ) {
+                eprintln!("[SPYTFY] MediaStore registration failed: {e}");
+            }
+        }
+    }
+
     Ok(())
 }
 

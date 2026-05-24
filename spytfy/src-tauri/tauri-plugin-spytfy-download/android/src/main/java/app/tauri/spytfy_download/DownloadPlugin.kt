@@ -1,8 +1,14 @@
 package app.tauri.spytfy_download
 
 import android.app.Activity
+import android.content.ContentValues
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.webkit.WebView
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
@@ -36,6 +42,13 @@ class DownloadArgs {
 @InvokeArg
 class CancelArgs {
     lateinit var processId: String
+}
+
+@InvokeArg
+class RegisterArgs {
+    lateinit var sourcePath: String
+    lateinit var displayName: String
+    lateinit var relativePath: String
 }
 
 @TauriPlugin
@@ -140,6 +153,57 @@ class DownloadPlugin(private val activity: Activity) : Plugin(activity) {
         val args = invoke.parseArgs(CancelArgs::class.java)
         YoutubeDL.getInstance().destroyProcessById(args.processId)
         invoke.resolve()
+    }
+
+    @Command
+    fun registerInMediaStore(invoke: Invoke) {
+        val args = invoke.parseArgs(RegisterArgs::class.java)
+        scope.launch {
+            try {
+                val sourceFile = File(args.sourcePath)
+                if (!sourceFile.exists()) {
+                    invoke.reject("Source file not found: ${args.sourcePath}")
+                    return@launch
+                }
+
+                val resolver = activity.contentResolver
+                val collection = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+                val values = ContentValues().apply {
+                    put(MediaStore.Audio.Media.DISPLAY_NAME, args.displayName)
+                    put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg")
+                    put(MediaStore.Audio.Media.RELATIVE_PATH, args.relativePath)
+                    put(MediaStore.Audio.Media.IS_PENDING, 1)
+                }
+
+                val uri = resolver.insert(collection, values)
+                if (uri == null) {
+                    invoke.reject("MediaStore insert returned null")
+                    return@launch
+                }
+
+                resolver.openFileDescriptor(uri, "w")?.use { pfd ->
+                    FileInputStream(sourceFile).use { input ->
+                        FileOutputStream(pfd.fileDescriptor).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                }
+
+                val done = ContentValues().apply {
+                    put(MediaStore.Audio.Media.IS_PENDING, 0)
+                }
+                resolver.update(uri, done, null, null)
+
+                Log.i(TAG, "Registered in MediaStore: ${args.displayName} → $uri")
+                val ret = JSObject()
+                ret.put("uri", uri.toString())
+                invoke.resolve(ret)
+            } catch (e: Exception) {
+                Log.e(TAG, "MediaStore register failed", e)
+                invoke.reject("MediaStore failed: ${e.message}")
+            }
+        }
     }
 
     companion object { const val TAG = "SpytfyDownload" }

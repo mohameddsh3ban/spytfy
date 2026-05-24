@@ -84,3 +84,36 @@ pub async fn download_audio_android(
 
     Ok(response.file_path)
 }
+
+#[derive(Serialize)]
+struct RegisterRequest {
+    #[serde(rename = "sourcePath")]
+    source_path: String,
+    #[serde(rename = "displayName")]
+    display_name: String,
+    #[serde(rename = "relativePath")]
+    relative_path: String,
+}
+
+#[derive(Deserialize)]
+struct RegisterResponse {
+    uri: String,
+}
+
+pub fn register_in_media_store(
+    app: &AppHandle,
+    file_path: &str,
+    display_name: &str,
+    folder_name: &str,
+) -> Result<String, String> {
+    let plugin = app.spytfy_download();
+    let relative_path = format!("Music/Spytfy/{folder_name}");
+
+    let response: RegisterResponse = plugin.run_mobile_plugin("registerInMediaStore", RegisterRequest {
+        source_path: file_path.to_string(),
+        display_name: display_name.to_string(),
+        relative_path,
+    })?;
+
+    Ok(response.uri)
+}
